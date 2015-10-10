@@ -10,13 +10,13 @@ Latest stable Deluge release for Arch Linux, including OpenVPN to tunnel torrent
 **Pull image**
 
 ```
-docker pull binhex/arch-delugevpn
+docker pull jbbodart/arch-delugevpn
 ```
 
 **Run container**
 
 ```
-docker run -d --cap-add=NET_ADMIN -p 8112:8112 -p 8118:8118 --name=<container name> -v <path for data files>:/data -v <path for config files>:/config -v /etc/localtime:/etc/localtime:ro -e VPN_ENABLED=<yes|no> -e VPN_USER=<vpn username> -e VPN_PASS=<vpn password> -e VPN_REMOTE=<vpn remote gateway> -e VPN_PORT=<vpn remote port> -e VPN_PROV=<pia|airvpn|custom> -e ENABLE_PRIVOXY=<yes|no> binhex/arch-delugevpn
+docker run -d --cap-add=NET_ADMIN -p 8112:8112 -p 8118:8118 --name=<container name> -v <path for data files>:/data -v <path for config files>:/config -v /etc/localtime:/etc/localtime:ro -e VPN_ENABLED=<yes|no> -e VPN_USER=<vpn username> -e VPN_PASS=<vpn password> -e VPN_REMOTE=<vpn remote gateway> -e VPN_PORT=<vpn remote port> -e VPN_PROV=<pia|airvpn|custom> -e ENABLE_PRIVOXY=<yes|no> jbbodart/arch-delugevpn
 ```
 
 Please replace all user variables in the above command defined by <> with the correct values.
