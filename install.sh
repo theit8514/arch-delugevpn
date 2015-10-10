@@ -19,6 +19,8 @@ mkdir /var/run/sshd
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 chown -Rf root:root /root/.ssh
+# generate host keys
+/usr/bin/ssh-keygen -A
 
 # cleanup
 yes|pacman -Scc
