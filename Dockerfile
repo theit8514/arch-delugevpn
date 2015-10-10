@@ -1,5 +1,5 @@
-FROM binhex/arch-openvpn
-MAINTAINER binhex
+FROM jbbodart/arch-openvpn
+MAINTAINER jbbodart
 
 # additional files
 ##################
