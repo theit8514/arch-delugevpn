@@ -12,6 +12,13 @@ if [[ $ENABLE_PRIVOXY == "yes" ]]; then
 	ip route add default via $DEFAULT_GATEWAY table privoxy
 fi
 
+# setup route for sshd using set-mark to route traffic for port 2222 to eth0
+if [[ $ENABLE_SSHD == "yes" ]]; then
+	echo "2222    sshd" >> /etc/iproute2/rt_tables
+	ip rule add fwmark 3 table sshd
+	ip route add default via $DEFAULT_GATEWAY table sshd
+fi
+
 echo "[info] ip routing table"
 ip route
 echo "--------------------"
@@ -44,6 +51,12 @@ iptables -A INPUT -i eth0 -p tcp --sport 8112 -j ACCEPT
 if [[ $ENABLE_PRIVOXY == "yes" ]]; then
 	iptables -A INPUT -i eth0 -p tcp --dport 8118 -j ACCEPT
 	iptables -A INPUT -i eth0 -p tcp --sport 8118 -j ACCEPT
+fi
+
+# accept input to sshd port 2222 if enabled
+if [[ $ENABLE_SSHD == "yes" ]]; then
+	iptables -A INPUT -i eth0 -p tcp --dport 2222 -j ACCEPT
+	iptables -A INPUT -i eth0 -p tcp --sport 2222 -j ACCEPT
 fi
 
 # accept input dns lookup
@@ -89,6 +102,11 @@ if [[ $ENABLE_PRIVOXY == "yes" ]]; then
 	iptables -t mangle -A OUTPUT -p tcp --sport 8118 -j MARK --set-mark 2
 fi
 
+# accept output to sshd port 2222 if enabled
+if [[ $ENABLE_SSHD == "yes" ]]; then
+	iptables -t mangle -A OUTPUT -p tcp --dport 2222 -j MARK --set-mark 3
+	iptables -t mangle -A OUTPUT -p tcp --sport 2222 -j MARK --set-mark 3
+fi
 # accept output for dns lookup
 iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 
