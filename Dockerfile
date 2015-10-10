@@ -32,6 +32,9 @@ VOLUME /data
 # expose port for deluge webui
 EXPOSE 8112
 
+# expose port for OpenSSH server
+EXPOSE 2222
+
 # run supervisor
 ################
 
