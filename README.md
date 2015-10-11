@@ -16,7 +16,7 @@ docker pull jbbodart/arch-delugevpn
 **Run container**
 
 ```
-docker run -d --cap-add=NET_ADMIN -p 8112:8112 -p 8118:8118 --name=<container name> -v <path for data files>:/data -v <path for config files>:/config -v /etc/localtime:/etc/localtime:ro -e VPN_ENABLED=<yes|no> -e VPN_USER=<vpn username> -e VPN_PASS=<vpn password> -e VPN_REMOTE=<vpn remote gateway> -e VPN_PORT=<vpn remote port> -e VPN_PROV=<pia|airvpn|custom> -e ENABLE_PRIVOXY=<yes|no> jbbodart/arch-delugevpn
+docker run -d --cap-add=NET_ADMIN -p 8112:8112 -p 8118:8118 --name=<container name> -v <path for data files>:/data -v <path for config files>:/config -v /etc/localtime:/etc/localtime:ro -e VPN_ENABLED=<yes|no> -e ENABLE_PRIVOXY=<yes|no> -e ENABLE_SSHD=<yes|no> jbbodart/arch-delugevpn
 ```
 
 Please replace all user variables in the above command defined by <> with the correct values.
@@ -37,16 +37,6 @@ Default password for the webui is "deluge"
 
 Default is no authentication required
 
-**PIA user**
-
-PIA users will need to supply VPN_USER and VPN_PASS, optionally define VPN_REMOTE (list of gateways https://www.privateinternetaccess.com/pages/client-support/#signup) if you wish to use another remote gateway other than the Netherlands.
-
-**Example**
-
-```
-docker run -d --cap-add=NET_ADMIN -p 8112:8112 -p 8118:8118 --name=delugevpn -v /root/docker/data:/data -v /root/docker/config:/config -v /etc/localtime:/etc/localtime:ro -e VPN_ENABLED=yes -e VPN_USER=myusername -e VPN_PASS=mypassword -e VPN_REMOTE=nl.privateinternetaccess.com -e VPN_PORT=1194 -e VPN_PROV=pia -e ENABLE_PRIVOXY=yes binhex/arch-delugevpn
-```
-
 **AirVPN user**
 
 AirVPN users will need to generate a unique OpenVPN configuration file by using the following link https://airvpn.org/generator/
@@ -61,5 +51,5 @@ AirVPN users will need to generate a unique OpenVPN configuration file by using 
 **Example**
 
 ```
-docker run -d --cap-add=NET_ADMIN -p 8112:8112 -p 8118:8118 --name=delugevpn -v /root/docker/data:/data -v /root/docker/config:/config -v /etc/localtime:/etc/localtime:ro -e VPN_ENABLED=yes -e VPN_PROV=airvpn -e ENABLE_PRIVOXY=yes binhex/arch-delugevpn
+docker run -d --cap-add=NET_ADMIN -p 8112:8112 -p 8118:8118 --name=delugevpn -v /root/docker/data:/data -v /root/docker/config:/config -v /etc/localtime:/etc/localtime:ro -e VPN_ENABLED=yes -e ENABLE_PRIVOXY=yes binhex/arch-delugevpn
 ```
