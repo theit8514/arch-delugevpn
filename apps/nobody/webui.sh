@@ -8,4 +8,4 @@ done
 echo "[info] Starting Deluge webui..."
 
 # run deluge webui
-/usr/bin/deluge-web -c /config
+/usr/bin/deluge-web -c /config/deluge/
