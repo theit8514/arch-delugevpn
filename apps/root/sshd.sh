@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # if SSHD_ENABLED set to "no" then don't run OpenSSH Server
