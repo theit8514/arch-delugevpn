@@ -13,6 +13,9 @@ ADD *.sh /root/
 # add bash script to run deluge
 ADD apps/nobody/*.sh /home/nobody/
 
+# add bash script to run sshd
+ADD apps/root/*.sh /root/
+
 # install app
 #############
 
