@@ -16,6 +16,15 @@ ADD apps/nobody/*.sh /home/nobody/
 # add bash script to run sshd
 ADD apps/root/*.sh /root/
 
+# mount volumes
+###############
+
+# map /config to host defined config path (used to store configuration from app)
+VOLUME /config
+
+# map /data to host defined data path (used to store data from app)
+VOLUME /data
+
 # install app
 #############
 
@@ -25,12 +34,6 @@ RUN chmod +x /root/*.sh /home/nobody/*.sh && \
 
 # docker settings
 #################
-
-# map /config to host defined config path (used to store configuration from app)
-VOLUME /config
-
-# map /data to host defined data path (used to store data from app)
-VOLUME /data
 
 # expose port for deluge webui
 EXPOSE 8112
