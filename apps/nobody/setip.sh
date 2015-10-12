@@ -14,14 +14,14 @@ do
 	LOCAL_IP=`ifconfig tun0 2>/dev/null | grep 'inet' | grep -P -o -m 1 '(?<=inet\s)[^\s]+'`
 	
 	# query deluge for current ip for tunnel
-	LISTEN_INTERFACE=`/usr/bin/deluge-console -c /config "config listen_interface" | grep -P -o -m 1 '[\d\.]+'`
+	LISTEN_INTERFACE=`/usr/bin/deluge-console -c /config/deluge "config listen_interface" | grep -P -o -m 1 '[\d\.]+'`
 
 	# if current listen interface ip is different to tunnel local ip then re-configure deluge
 	if [[ $LISTEN_INTERFACE != "$LOCAL_IP" ]]; then
 		echo "[info] Deluge listening interface IP $LISTEN_INTERFACE and OpenVPN local IP $LOCAL_IP different, configuring Deluge..."
 
 		# set listen interface to tunnel local ip
-		/usr/bin/deluge-console -c /config "config --set listen_interface $LOCAL_IP"
+		/usr/bin/deluge-console -c /config/deluge "config --set listen_interface $LOCAL_IP"
 	fi
 
 	sleep 5m
