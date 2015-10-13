@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "[info] waiting for deluge to start up ..."
+echo "[info] waiting for deluge to start up..."
 
 # wait for deluge daemon process to start (listen for port)
 while [[ $(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".58846"') == "" ]]; do
-	sleep 0.1
+	sleep 0.5
 done
 
 echo "[info] deluge started, starting configuration"
