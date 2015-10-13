@@ -1,13 +1,22 @@
 #!/bin/bash
 
+if [[ $VPN_ENABLED == "no" ]]; then
+	echo "[info] VPN disabled, skipping configuration of deluge listen interface..."
+	exit 0
+fi
+
 echo "[info] configuring Deluge listen interface..."
+
+echo "[info] VPN enabled, waiting for tun0 interface to come up..."
+# run script to check ip is valid for tun0
+source /home/nobody/checkip.sh
 
 # wait for deluge daemon process to start (listen for port)
 while [[ $(netstat -lnt | awk '$6 == "LISTEN" && $4 ~ ".58846"') == "" ]]; do
-	sleep 0.1
+	sleep 0.5
 done
 
-# while loop to check incoming port every 5 mins
+# while loop to check interface IP every 5 mins
 while true
 do
 	# get currently allocated ip address for adapter tun0
