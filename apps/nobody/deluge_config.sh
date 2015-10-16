@@ -19,9 +19,11 @@ fi
 
 echo "[info] configuring Deluge data dirs..."
 
-/usr/bin/deluge-console -c /config/deluge "config --set move_completed_path /data/Seeding"
-/usr/bin/deluge-console -c /config/deluge "config --set download_location /data/Downloads"
+/usr/bin/deluge-console -c /config/deluge "config --set move_completed_path /data/Seed"
+/usr/bin/deluge-console -c /config/deluge "config --set move_completed True"
+/usr/bin/deluge-console -c /config/deluge "config --set download_location /data/Download"
 /usr/bin/deluge-console -c /config/deluge "config --set torrentfiles_location /data/Torrents"
-/usr/bin/deluge-console -c /config/deluge "config --set autoadd_location /data/Torrents"
+/usr/bin/deluge-console -c /config/deluge "config --set autoadd_location /data/Watch"
+/usr/bin/deluge-console -c /config/deluge "config --set autoadd_enable True"
 
 echo "[info] deluge configuration completed"
