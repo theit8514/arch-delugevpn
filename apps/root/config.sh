@@ -15,6 +15,7 @@ chown -R nobody:users /config/privoxy /config/deluge
 
 mkdir -p /data/Downloads
 mkdir -p /data/Torrents
-mkdir -p /data/Seeding
+mkdir -p /data/Seed
+mkdir -p /data/Watch
 
-chown -R nobody:users /data/Downloads /data/Torrents /data/Seeding
+chown -R nobody:users /data/Downloads /data/Torrents /data/Seed /data/Watch
