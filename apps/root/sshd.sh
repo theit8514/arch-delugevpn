@@ -7,14 +7,12 @@ if [[ $SSHD_ENABLED == "no" ]]; then
 
 else
 
-        echo "[info] SSHD is enabled, starting OpenSSH server"
-
-        echo "[info] Configuring OpenSSH server..."
+        echo "[info] SSHD is enabled, configuring OpenSSH server..."
 
         mkdir -p /root/.ssh
         chmod 700 /root/.ssh
 
-        if [[ ! -f "/config/sshd/authorized_keys" ]]; then
+        if [[ -f "/config/sshd/authorized_keys" ]]; then
                 cp -R /config/sshd/authorized_keys /root/.ssh/
                 chmod 600 /root/.ssh/*
         fi
