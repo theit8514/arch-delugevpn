@@ -10,9 +10,9 @@ check_valid_ip() {
 		 return 1
 	fi
 	
-	# check that interface is up
 	ip link | grep tun0 | grep -Eq 'UP'
-	if [ $? -neq 0 ]; then
+	# check that interface is up
+	if [[ ! $? ]]; then
 		return 1
 	fi
 	return 0
@@ -25,5 +25,3 @@ do
 	sleep 1
 	LOCAL_IP=$(ip addr | awk '/inet/ && /tun0/{sub(/\/.*$/,"",$2); print $2}')
 done
-
-echo "[info] VPN Interface tun0 OK"
