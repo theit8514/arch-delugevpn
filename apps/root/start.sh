@@ -33,6 +33,9 @@ echo 'nameserver 87.98.175.85' >> /etc/resolv.conf
 echo 'nameserver 92.222.80.28' >> /etc/resolv.conf
 echo 'nameserver 5.135.183.146' >> /etc/resolv.conf
 
+# set up timezone
+rm -f /etc/localtime
+ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
 # set up sshd
 #############
