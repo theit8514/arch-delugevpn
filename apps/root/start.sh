@@ -147,5 +147,7 @@ echo "[info] Configuring Deluge..."
 supervisorctl start deluge_config
 echo "[info] Starting Deluge GUI..."
 supervisorctl start deluge_gui
-echo "[info] Starting VPN IP monitoring..."
-supervisorctl start deluge_setip
+if [[ "${ENABLE_VPN}" == "yes" ]]; then  
+	echo "[info] Starting VPN IP monitoring..."
+	supervisorctl start deluge_setip
+fi
