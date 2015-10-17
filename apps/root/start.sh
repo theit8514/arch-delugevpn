@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# exit script if return code != 0
+set -e
+
 # set up config directory
 #########################
 
@@ -34,7 +37,7 @@ echo 'nameserver 5.135.183.146' >> /etc/resolv.conf
 # set up sshd
 #############
 
-if [[ "${SSHD_ENABLED}" == "yes" ]]; then
+if [[ "${ENABLE_SSHD}" == "yes" ]]; then
 
     echo "[info] Configuring OpenSSH sever..."
     mkdir -p /root/.ssh
@@ -52,14 +55,13 @@ if [[ "${SSHD_ENABLED}" == "yes" ]]; then
     sed -i -e "s/#PermitEmptyPasswords.*/PermitEmptyPasswords yes/g" /etc/ssh/sshd_config
     sed -i -e "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config
 
-    echo "[info] OpenSSH configuration done, starting OpenSSH daemon..."
-    supervisorctl start sshd
+    echo "[info] OpenSSH server configuration done"
 fi
 
 # set up openvpn
 ################
 
-if [[ "${VPN_ENABLED}" == "yes" ]]; then
+if [[ "${ENABLE_VPN}" == "yes" ]]; then
     echo "[info] Configuring OpenVPN client..."
     # wildcard search for openvpn config files
     VPN_CONFIG=$(find /config/openvpn -maxdepth 1 -name "*.ovpn" -print)
@@ -97,14 +99,14 @@ if [[ "${VPN_ENABLED}" == "yes" ]]; then
     # setup ip tables and routing for application
     source /root/iptables.sh
 
-    echo "[info] OpenVPN client configuration done, starting OpenVPN..."
-    supervisorctl start openvpn
+    echo "[info] OpenVPN configuration done"
+
 fi
 
 # set up privoxy
 ################
 
-if [[ $ENABLE_PRIVOXY == "yes" ]]; then	
+if [[ "${ENABLE_PRIVOXY}" == "yes" ]]; then	
 	echo "[info] Configuring Privoxy"...
 	mkdir -p /config/privoxy
 		
@@ -119,3 +121,31 @@ if [[ $ENABLE_PRIVOXY == "yes" ]]; then
 
 	echo "[info] Privoxy configuration done"
 fi
+
+
+# start everything
+##################
+
+if [[ "${ENABLE_SSHD}" == "yes" ]]; then
+    echo "[info] Starting OpenSSH daemon..."
+    supervisorctl start sshd
+fi
+
+if [[ "${ENABLE_VPN}" == "yes" ]]; then    
+    echo "[info] Starting OpenVPN..."
+    supervisorctl start openvpn
+fi
+
+if [[ "${ENABLE_PRIVOXY}" == "yes" ]]; then
+    echo "[info] Starting Privoxy..."
+    supervisorctl start privoxy
+fi
+
+echo "[info] Starting Deluge..."
+supervisorctl start deluge
+echo "[info] Configuring Deluge..."
+supervisorctl start deluge_config
+echo "[info] Starting Deluge GUI..."
+supervisorctl start deluge_gui
+echo "[info] Starting VPN IP monitoring..."
+supervisorctl start deluge_setip
