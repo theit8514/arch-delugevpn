@@ -7,11 +7,10 @@ if [[ -f /config/deluge/core.conf ]]; then
 	sed -i -e 's/"listen_interface".*/"listen_interface": "",/g' /config/deluge/core.conf
 fi
 
-# if vpn set to "no" then set deluge to random incoming port
 if [[ $VPN_ENABLED == "yes" ]]; then
 	echo "[info] VPN enabled, waiting for tun0 interface to come up..."
 	# run script to check ip is valid for tun0
-	source /home/nobody/checkip.sh
+	source /home/nobody/checkvpn.sh
 fi
 
 echo "[info] All checks complete, starting Deluge daemon..."
