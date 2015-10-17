@@ -9,7 +9,7 @@ done
 
 echo "[info] Deluge started, starting configuration"
 
-if [[ "${DELUGE_LISTEN_PORT} =~ ^-?[0-9]+$ ]]; then
+if [[ "${DELUGE_LISTEN_PORT}" =~ ^-?[0-9]+$ ]]; then
 	echo "[info] configuring Deluge listen port..."
 	# enable bind incoming port to specific port (disable random)
 	/usr/bin/deluge-console -c /config/deluge "config --set random_port False"
