@@ -24,7 +24,7 @@ mkdir -p /data/torrents
 mkdir -p /data/seed
 mkdir -p /data/watch
 
-chown -R nobody:users /data/Downloads /data/Torrents /data/Seed /data/Watch
+chown -R nobody:users /data/downloads /data/torrents /data/seed /data/watch
 
 # set up DNS
 # add in OpenNIC public nameservers
