@@ -1,4 +1,4 @@
-FROM jbbodart/arch-openvpn
+FROM jbbodart/arch-base
 MAINTAINER jbbodart
 
 # additional files
@@ -35,6 +35,8 @@ VOLUME /data
 EXPOSE 8112
 # expose port for OpenSSH server
 EXPOSE 2222
+# expose port for privoxy
+EXPOSE 8118
 
 # run supervisor
 ################

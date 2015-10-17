@@ -4,15 +4,15 @@
 set -e
 
 # define pacman packages
-pacman_packages="unzip unrar librsvg pygtk python2-service-identity python2-mako python2-notify deluge openssh"
+pacman_packages="net-tools openresolv unzip unrar librsvg pygtk python2-service-identity python2-mako python2-notify openvpn privoxy deluge openssh"
 
 # install pre-reqs
 pacman -Sy --noconfirm
 pacman -S --needed $pacman_packages --noconfirm
 
 # set permissions
-chown -R nobody:users /home/nobody /usr/bin/deluged /usr/bin/deluge-web
-chmod -R 775 /home/nobody /usr/bin/deluged /usr/bin/deluge-web
+chown -R nobody:users /home/nobody /usr/bin/privoxy /etc/privoxy /usr/bin/deluged /usr/bin/deluge-web
+chmod -R 775 /home/nobody /usr/bin/privoxy /etc/privoxy /usr/bin/deluged /usr/bin/deluge-web
 
 # set up openssh
 mkdir /var/run/sshd
