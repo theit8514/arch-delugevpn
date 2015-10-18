@@ -68,13 +68,12 @@ insmod /lib/modules/tun.ko
 insmod /lib/modules/iptable_mangle.ko
 insmod /lib/modules/xt_mark.ko
 ```
-
 2. Download container image by searching jbbodart/delugevpn on Docker Hub Registry
 3. Create a directory for the container data (eg /docker/DelugeVPN)
 4. Launch container with "Docker Run" command. For exemple :
 ```
 docker run -d -p 8112:8112 -p 8118:8118 -p 2222:2222 --name=DelugeVPN -v /docker/DelugeVPN/data:/data -v /docker/DelugeVPN/config:/config -e ENABLE_VPN=yes -e ENABLE_PRIVOXY=yes -e ENABLE_SSHD=yes -e DELUGE_LISTEN_PORT=49313 jbbodart/arch-delugevpn
 ```
-4. Synology Docker GUI does not support "--cap-add=NET_ADMIN" option. Plese go to "Advanced Setting" -> "Environnement" and check "Using high privilege execute container"
-5. Stop container and copy your .ovpn file in the /docker/DelugeVPN/config/openvpn/ folder
-6. Restart container
+5. Synology Docker GUI does not support "--cap-add=NET_ADMIN" option. Plese go to "Advanced Setting" -> "Environnement" and check "Using high privilege execute container"
+6. Stop container and copy your .ovpn file in the /docker/DelugeVPN/config/openvpn/ folder
+7. Restart container
