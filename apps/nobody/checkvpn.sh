@@ -1,8 +1,6 @@
 #!/bin/bash
 
-echo "[info] Waiting for a valid VPN tunnel..."
-
-# create function to check tunnel local ip is valid
+# create function to check tunnel local ip is valid and interface is up
 check_valid_ip() {
 	IP_ADDRESS="$1"
 	# check if ip address looks valid
@@ -19,9 +17,10 @@ check_valid_ip() {
 }
 
 # loop and wait until adapter tun0 local ip is valid
-LOCAL_IP=""
+LOCAL_IP=$(ip addr | awk '/inet/ && /tun0/{sub(/\/.*$/,"",$2); print $2}')
 while ! check_valid_ip "$LOCAL_IP"
 do
-	sleep 1
+	echo "[info] Waiting for a valid VPN tunnel..."
+	sleep 5
 	LOCAL_IP=$(ip addr | awk '/inet/ && /tun0/{sub(/\/.*$/,"",$2); print $2}')
 done
