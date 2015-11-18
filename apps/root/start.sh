@@ -144,10 +144,12 @@ if [[ "${ENABLE_PRIVOXY}" == "yes" ]]; then
     supervisorctl start privoxy
 fi
 
+if [ ! -f /config/deluge/core.conf ]; then
+    cp /home/nobody/deluge_core.conf /config/deluge/core.conf
+fi
+
 echo "[info] Starting Deluge..."
 supervisorctl start deluge
-echo "[info] Configuring Deluge..."
-supervisorctl start deluge_config
 echo "[info] Starting Deluge Web UI..."
 supervisorctl start deluge_webui
 if [[ "${ENABLE_VPN}" == "yes" ]]; then  

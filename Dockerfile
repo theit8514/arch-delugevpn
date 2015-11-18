@@ -11,7 +11,7 @@ ADD *.conf /etc/supervisor.d/
 ADD *.sh /root/
 
 # add bash script to run deluge
-ADD apps/nobody/*.sh /home/nobody/
+ADD apps/nobody/* /home/nobody/
 
 # add bash script to run sshd
 ADD apps/root/*.sh /root/
