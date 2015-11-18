@@ -4,7 +4,7 @@ echo "[info] starting Deluge..."
 
 if [[ -f /config/deluge/core.conf ]]; then
 	# reset listen interface ip address for deluge
-	sed -i -e 's/"listen_interface".*/"listen_interface": "",/g' /config/deluge/core.conf
+	sed -i -e 's/"listen_interface".*\(,\)?/"listen_interface": ""\1/g' /config/deluge/core.conf
 fi
 
 if [[ $VPN_ENABLED == "yes" ]]; then
