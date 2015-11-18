@@ -7,7 +7,7 @@ set -e
 pacman_packages="net-tools openresolv unzip unrar librsvg pygtk python2-service-identity python2-mako python2-notify openvpn privoxy deluge openssh"
 
 # install pre-reqs
-pacman -Sy --noconfirm
+pacman -Syu --ignore filesystem --noconfirm
 pacman -S --needed $pacman_packages --noconfirm
 
 # set permissions
