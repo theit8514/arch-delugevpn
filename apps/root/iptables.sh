@@ -82,10 +82,13 @@ iptables -P OUTPUT DROP
 # accept output from tunnel adapter
 iptables -A OUTPUT -o tun0 -j ACCEPT
 
-# accept output to/from docker containers (172.x range is internal dhcp)
-iptables -A OUTPUT -s 172.17.0.0/16 -d 172.17.0.0/16 -j ACCEPT
-
 for i in $INTERFACES; do
+
+	# accept output to/from docker networks
+	NETWORK=$(ip route | grep "dev $i" | grep "scope link" | awk '{ print $1 }')
+	if [[ ! -z "${NETWORK}" ]]; then
+		iptables -A OUTPUT -s $NETWORK -d $NETWORK -j ACCEPT
+	fi
 
 	# accept output to ip range on lan (if specified)
 	if [[ ! -z "${LAN_RANGE}" ]]; then

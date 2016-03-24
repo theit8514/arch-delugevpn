@@ -120,7 +120,13 @@ if [[ "${ENABLE_PRIVOXY}" == "yes" ]]; then
 	LAN_IP=$(hostname -i)
 	sed -i -e "s/confdir \/etc\/privoxy/confdir \/config\/privoxy/g" /config/privoxy/config
 	sed -i -e "s/logdir \/var\/log\/privoxy/logdir \/config\/privoxy/g" /config/privoxy/config
-	sed -i -e "s/listen-address.*/listen-address  $LAN_IP:8118/g" /config/privoxy/config
+
+	sed -i -e "/listen-address/d" /config/privoxy/config
+	INTERFACES=$(ip link show type veth | grep "^[0-9]" | awk '{ print substr($2, 1, length($2) - 1); }')
+	for i in $INTERFACES; do
+		LAN_IP=$(ip addr show $i | grep inet[^6] | awk '{ print $2 }' | sed -r 's,/[0-9]+,,')
+		echo "listen-address $LAN_IP:8118" >> /config/privoxy/config
+	done
 
 	echo "[info] Privoxy configuration done"
 fi
