@@ -26,6 +26,8 @@ echo "--------------------"
 # input iptable rules
 ###
 
+INTERFACES=$(ip link show type veth | grep "^[0-9]" | awk '{ print substr($2, 1, length($2) - 1); }')
+
 # set policy to drop for input
 iptables -P INPUT DROP
 
@@ -35,29 +37,32 @@ iptables -A INPUT -i tun0 -j ACCEPT
 # accept input to/from docker containers (172.x range is internal dhcp)
 iptables -A INPUT -s 172.17.0.0/16 -d 172.17.0.0/16 -j ACCEPT
 
-# accept input from ip range on lan (if specified)
-if [[ ! -z "${LAN_RANGE}" ]]; then
-	iptables -A INPUT -i eth0 -m iprange --src-range $LAN_RANGE -j ACCEPT
-fi
+for i in $INTERFACES; do
 
-# accept input to vpn gateway
-iptables -A INPUT -i eth0 -p $VPN_PROTOCOL --sport $VPN_PORT -j ACCEPT
+	# accept input from ip range on lan (if specified)
+	if [[ ! -z "${LAN_RANGE}" ]]; then
+		iptables -A INPUT -i $i -m iprange --src-range $LAN_RANGE -j ACCEPT
+	fi
 
-# accept input to deluge webui port 8112
-iptables -A INPUT -i eth0 -p tcp --dport 8112 -j ACCEPT
-iptables -A INPUT -i eth0 -p tcp --sport 8112 -j ACCEPT
+	# accept input to vpn gateway
+	iptables -A INPUT -i $i -p $VPN_PROTOCOL --sport $VPN_PORT -j ACCEPT
 
-# accept input to privoxy port 8118 if enabled
-if [[ $ENABLE_PRIVOXY == "yes" ]]; then
-	iptables -A INPUT -i eth0 -p tcp --dport 8118 -j ACCEPT
-	iptables -A INPUT -i eth0 -p tcp --sport 8118 -j ACCEPT
-fi
+	# accept input to deluge webui port 8112
+	iptables -A INPUT -i $i -p tcp --dport 8112 -j ACCEPT
+	iptables -A INPUT -i $i -p tcp --sport 8112 -j ACCEPT
 
-# accept input to sshd port 2222 if enabled
-if [[ $ENABLE_SSHD == "yes" ]]; then
-	iptables -A INPUT -i eth0 -p tcp --dport 2222 -j ACCEPT
-	iptables -A INPUT -i eth0 -p tcp --sport 2222 -j ACCEPT
-fi
+	# accept input to privoxy port 8118 if enabled
+	if [[ $ENABLE_PRIVOXY == "yes" ]]; then
+		iptables -A INPUT -i $i -p tcp --dport 8118 -j ACCEPT
+		iptables -A INPUT -i $i -p tcp --sport 8118 -j ACCEPT
+	fi
+
+	if [[ $ENABLE_SSHD == "yes" ]]; then
+		iptables -A INPUT -i $i -p tcp --dport 2222 -j ACCEPT
+		iptables -A INPUT -i $i -p tcp --sport 2222 -j ACCEPT
+	fi
+
+done
 
 # accept input dns lookup
 iptables -A INPUT -p udp --sport 53 -j ACCEPT
@@ -80,17 +85,21 @@ iptables -A OUTPUT -o tun0 -j ACCEPT
 # accept output to/from docker containers (172.x range is internal dhcp)
 iptables -A OUTPUT -s 172.17.0.0/16 -d 172.17.0.0/16 -j ACCEPT
 
-# accept output to ip range on lan (if specified)
-if [[ ! -z "${LAN_RANGE}" ]]; then
-	iptables -A OUTPUT -o eth0 -m iprange --dst-range $LAN_RANGE -j ACCEPT
-fi
+for i in $INTERFACES; do
 
-# accept output from vpn gateway
-iptables -A OUTPUT -o eth0 -p $VPN_PROTOCOL --dport $VPN_PORT -j ACCEPT
+	# accept output to ip range on lan (if specified)
+	if [[ ! -z "${LAN_RANGE}" ]]; then
+		iptables -A OUTPUT -o $i -m iprange --dst-range $LAN_RANGE -j ACCEPT
+	fi
 
-# accept output from deluge webui port 8112 (used when tunnel down)
-iptables -A OUTPUT -o eth0 -p tcp --dport 8112 -j ACCEPT
-iptables -A OUTPUT -o eth0 -p tcp --sport 8112 -j ACCEPT
+	# accept output from vpn gateway
+	iptables -A OUTPUT -o $i -p $VPN_PROTOCOL --dport $VPN_PORT -j ACCEPT
+
+	# accept output from deluge webui port 8112 (used when tunnel down)
+	iptables -A OUTPUT -o $i -p tcp --dport 8112 -j ACCEPT
+	iptables -A OUTPUT -o $i -p tcp --sport 8112 -j ACCEPT
+
+done
 
 # accept output from deluge webui port 8112 (used when tunnel up)
 iptables -t mangle -A OUTPUT -p tcp --dport 8112 -j MARK --set-mark 1
