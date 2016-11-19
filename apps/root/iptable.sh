@@ -78,27 +78,38 @@ iptables -A INPUT -i "${VPN_DEVICE_TYPE}0" -j ACCEPT
 # accept input to/from docker containers (172.x range is internal dhcp)
 iptables -A INPUT -s 172.17.0.0/16 -d 172.17.0.0/16 -j ACCEPT
 
-# accept input to vpn gateway
-iptables -A INPUT -i eth0 -p $VPN_PROTOCOL --sport $VPN_PORT -j ACCEPT
-
-# accept input to deluge webui port 8112
-iptables -A INPUT -i eth0 -p tcp --dport 8112 -j ACCEPT
-iptables -A INPUT -i eth0 -p tcp --sport 8112 -j ACCEPT
-
-# accept input to privoxy port 8118 if enabled
-if [[ $ENABLE_PRIVOXY == "yes" ]]; then
-	iptables -A INPUT -i eth0 -p tcp --dport 8118 -j ACCEPT
-	iptables -A INPUT -i eth0 -p tcp --sport 8118 -j ACCEPT
+if [[ -z "${VPN_INTERFACE}" ]]; then
+	VPN_INTERFACE=eth0
 fi
 
-# process lan networks in the list
-for lan_network_item in "${lan_network_list[@]}"; do
+# accept input to vpn gateway
+iptables -A INPUT -i $VPN_INTERFACE -p $VPN_PROTOCOL --sport $VPN_PORT -j ACCEPT
 
-	# strip whitespace from start and end of lan_network_item
-	lan_network_item=$(echo "${lan_network_item}" | sed -e 's/^[ \t]*//')
+# capture system interfaces, could be connected to multiple docker networks
+INTERFACES=$(for i in /sys/class/net/*; do if [ "`cat $i/type`" == "1" ]; then basename $i; fi; done)
 
-	# accept input to deluge daemon port - used for lan access
-	iptables -A INPUT -i eth0 -s "${lan_network_item}" -p tcp --dport 58846 -j ACCEPT
+for int in $INTERFACES; do
+
+	# accept input to deluge webui port 8112
+	iptables -A INPUT -i $int -p tcp --dport 8112 -j ACCEPT
+	iptables -A INPUT -i $int -p tcp --sport 8112 -j ACCEPT
+
+	# accept input to privoxy port 8118 if enabled
+	if [[ $ENABLE_PRIVOXY == "yes" ]]; then
+		iptables -A INPUT -i $int -p tcp --dport 8118 -j ACCEPT
+		iptables -A INPUT -i $int -p tcp --sport 8118 -j ACCEPT
+	fi
+
+	# process lan networks in the list
+	for lan_network_item in "${lan_network_list[@]}"; do
+
+		# strip whitespace from start and end of lan_network_item
+		lan_network_item=$(echo "${lan_network_item}" | sed -e 's/^[ \t]*//')
+
+		# accept input to deluge daemon port - used for lan access
+		iptables -A INPUT -i $int -s "${lan_network_item}" -p tcp --dport 58846 -j ACCEPT
+
+	done
 
 done
 
@@ -124,7 +135,7 @@ iptables -A OUTPUT -o "${VPN_DEVICE_TYPE}0" -j ACCEPT
 iptables -A OUTPUT -s 172.17.0.0/16 -d 172.17.0.0/16 -j ACCEPT
 
 # accept output from vpn gateway
-iptables -A OUTPUT -o eth0 -p $VPN_PROTOCOL --dport $VPN_PORT -j ACCEPT
+iptables -A OUTPUT -o $VPN_INTERFACE -p $VPN_PROTOCOL --dport $VPN_PORT -j ACCEPT
 
 # if iptable mangle is available (kernel module) then use mark
 if [[ $iptable_mangle_exit_code == 0 ]]; then
@@ -141,24 +152,28 @@ if [[ $iptable_mangle_exit_code == 0 ]]; then
 	
 fi
 
-# accept output from deluge webui port 8112 - used for lan access
-iptables -A OUTPUT -o eth0 -p tcp --dport 8112 -j ACCEPT
-iptables -A OUTPUT -o eth0 -p tcp --sport 8112 -j ACCEPT
+for int in $INTERFACES; do
 
-# accept output from privoxy port 8118 - used for lan access
-if [[ $ENABLE_PRIVOXY == "yes" ]]; then
-	iptables -A OUTPUT -o eth0 -p tcp --dport 8118 -j ACCEPT
-	iptables -A OUTPUT -o eth0 -p tcp --sport 8118 -j ACCEPT
-fi
+	# accept output from deluge webui port 8112 - used for lan access
+	iptables -A OUTPUT -o $int -p tcp --dport 8112 -j ACCEPT
+	iptables -A OUTPUT -o $int -p tcp --sport 8112 -j ACCEPT
 
-# process lan networks in the list
-for lan_network_item in "${lan_network_list[@]}"; do
+	# accept output from privoxy port 8118 - used for lan access
+	if [[ $ENABLE_PRIVOXY == "yes" ]]; then
+		iptables -A OUTPUT -o $int -p tcp --dport 8118 -j ACCEPT
+		iptables -A OUTPUT -o $int -p tcp --sport 8118 -j ACCEPT
+	fi
 
-	# strip whitespace from start and end of lan_network_item
-	lan_network_item=$(echo "${lan_network_item}" | sed -e 's/^[ \t]*//')
+	# process lan networks in the list
+	for lan_network_item in "${lan_network_list[@]}"; do
 
-	# accept output to deluge daemon port - used for lan access
-	iptables -A OUTPUT -o eth0 -d "${lan_network_item}" -p tcp --sport 58846 -j ACCEPT
+		# strip whitespace from start and end of lan_network_item
+		lan_network_item=$(echo "${lan_network_item}" | sed -e 's/^[ \t]*//')
+
+		# accept output to deluge daemon port - used for lan access
+		iptables -A OUTPUT -o $int -d "${lan_network_item}" -p tcp --sport 58846 -j ACCEPT
+
+	done
 
 done
 
